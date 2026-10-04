@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('로그인')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container narrow">
+    <h1>로그인</h1>
+    <form class="form-card" th:action="@{/login}" method="post">
+        <div class="alert err" th:if="${param.error}">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+        <div class="alert ok" th:if="${param.registered}">가입이 완료되었습니다. 로그인해 주세요.</div>
+        <label>이메일<input type="email" name="username" required autofocus></label>
+        <label>비밀번호<input type="password" name="password" required></label>
+        <button class="btn primary block" type="submit">로그인</button>
+        <p class="muted center">아직 회원이 아니신가요? <a th:href="@{/register}">회원가입</a></p>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

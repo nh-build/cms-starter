@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+    <div class="page-head">
+        <h1 th:text="${pageTitle}">전체상품</h1>
+        <form method="get" th:action="@{/products}" class="sort-form">
+            <input type="hidden" name="category" th:value="${currentCategory}" th:if="${currentCategory != null}">
+            <input type="hidden" name="q" th:value="${q}" th:if="${q != null}">
+            <select name="sort" onchange="this.form.submit()" aria-label="정렬">
+                <option value="" th:selected="${sort == null or sort == ''}">최신순</option>
+                <option value="best" th:selected="${sort == 'best'}">베스트</option>
+                <option value="new" th:selected="${sort == 'new'}">신상품</option>
+                <option value="price_asc" th:selected="${sort == 'price_asc'}">낮은 가격순</option>
+                <option value="price_desc" th:selected="${sort == 'price_desc'}">높은 가격순</option>
+            </select>
+        </form>
+    </div>
+    <div class="chips">
+        <a class="chip" th:classappend="${currentCategory == null} ? 'on'" th:href="@{/products}">전체</a>
+        <a th:each="c : ${categories}" class="chip" th:classappend="${c.slug == currentCategory} ? 'on'"
+           th:href="@{/products(category=${c.slug})}" th:text="${c.name}">카테고리</a>
+    </div>
+    <p th:if="${page.empty}" class="empty">등록된 상품이 없습니다.</p>
+    <div class="grid" th:classappend="|cols-${gridColumns}|">
+        <th:block th:each="p : ${page.content}"><a th:replace="~{fragments/layout :: productCard(${p})}"></a></th:block>
+    </div>
+    <nav th:replace="~{fragments/layout :: pagination(${page}, ${baseUrl})}"></nav>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

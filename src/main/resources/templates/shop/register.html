@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('회원가입')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container narrow">
+    <h1>회원가입</h1>
+    <form class="form-card" th:action="@{/register}" th:object="${form}" method="post">
+        <label>이메일<input type="email" th:field="*{email}" required>
+            <small class="err-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small></label>
+        <label>비밀번호 (8자 이상)<input type="password" th:field="*{password}" required minlength="8">
+            <small class="err-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small></label>
+        <label>이름<input th:field="*{name}" required>
+            <small class="err-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small></label>
+        <label>연락처<input th:field="*{phone}" placeholder="010-0000-0000"></label>
+        <button class="btn primary block" type="submit">가입하기</button>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/*
+ * 브랜드 기본값 (디자인 토큰).
+ * 실제 값은 application.yml 의 brand.* 설정이 <style> 로 :root 에 덮어쓴다.
+ * 새 프로젝트에서는 설정값만 바꾸면 되고, 여기서는 파생 색상/공통 토큰만 관리한다.
+ */
+:root {
+    --brand: #4E90C4;
+    --bg: #F7FBFE;
+    --font: 'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif;
+
+    --ink: #23252B;
+    --muted: #7A8794;
+    --line: #E3ECF3;
+    --card: #ffffff;
+    --brand-soft: color-mix(in srgb, var(--brand) 12%, white);
+    --brand-softer: color-mix(in srgb, var(--brand) 6%, white);
+    --brand-dark: color-mix(in srgb, var(--brand) 85%, black);
+    --radius: 14px;
+    --ok: #3f9a62;
+    --warn: #d9534f;
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('주문 상세')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <div class="page-head"><h1 th:text="|주문 ${order.orderNo}|">주문</h1><a class="btn outline" th:href="@{/admin/orders}">목록</a></div>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div class="card pad">
+        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" class="inline-form">
+            <span>현재 상태</span> <span class="pill" th:classappend="${order.status.css}" th:text="${order.status.label}"></span>
+            <select name="status"><option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}" th:selected="${s == order.status}"></option></select>
+            <button class="btn small primary" type="submit">상태 변경</button>
+        </form>
+        <p class="muted small">결제완료 이후 상태를 '취소'로 바꾸면 재고가 복구됩니다. (포트원 환불은 포트원 관리자 콘솔에서 별도 진행)</p>
+    </div>
+    <div class="card pad">
+        <table class="table">
+            <thead><tr><th>상품</th><th>옵션</th><th>단가</th><th>수량</th><th>합계</th></tr></thead>
+            <tbody>
+            <tr th:each="i : ${order.items}">
+                <td th:text="${i.productName}"></td><td th:text="${i.optionLabel}"></td>
+                <td th:text="|${#numbers.formatInteger(i.unitPrice, 0, 'COMMA')}원|"></td>
+                <td th:text="${i.quantity}"></td>
+                <td th:text="|${#numbers.formatInteger(i.lineTotal, 0, 'COMMA')}원|"></td>
+            </tr>
+            </tbody>
+        </table>
+        <dl class="kv">
+            <dt>상품금액</dt><dd th:text="|${#numbers.formatInteger(order.itemsTotal, 0, 'COMMA')}원|"></dd>
+            <dt>배송비</dt><dd th:text="|${#numbers.formatInteger(order.shippingFee, 0, 'COMMA')}원|"></dd>
+            <dt>총액</dt><dd><strong th:text="|${#numbers.formatInteger(order.total, 0, 'COMMA')}원|"></strong></dd>
+            <dt>결제수단</dt><dd th:text="${order.payMethod}"></dd>
+            <dt>포트원 결제번호</dt><dd th:text="${order.impUid ?: '-'}"></dd>
+            <dt>주문자</dt><dd th:text="${order.member.name + ' <' + order.member.email + '>'}"></dd>
+            <dt>받는 분</dt><dd th:text="${order.receiverName + ' / ' + order.receiverPhone}"></dd>
+            <dt>배송지</dt><dd th:text="${(order.zipcode ?: '') + ' ' + order.address}"></dd>
+            <dt>메모</dt><dd th:text="${order.memo ?: '-'}"></dd>
+        </dl>
+    </div>
+</main>
+</div>
+</body>
+</html>

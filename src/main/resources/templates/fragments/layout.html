@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title th:text="${title} + ' | ' + ${brand.name}">Shop</title>
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(brand.fontCssUrl)}" th:href="${brand.fontCssUrl}">
+    <link rel="stylesheet" th:href="@{/css/brand.css}">
+    <link rel="stylesheet" th:href="@{/css/shop.css}">
+    <style th:utext="${brand.cssVars}"></style>
+</head>
+<body>
+
+<!-- 상단 네비게이션 -->
+<header th:fragment="header" class="site-header">
+    <div class="container header-inner">
+        <a class="logo" th:href="@{/}">
+            <img th:if="${brand.hasLogo()}" th:src="@{${brand.logoPath}}" th:alt="${brand.name}">
+            <span th:unless="${brand.hasLogo()}" th:text="${brand.name}">LUMO</span>
+        </a>
+        <nav class="main-nav">
+            <a th:href="@{/products}">전체상품</a>
+            <a th:href="@{/products(sort='new')}">신상품</a>
+            <a th:href="@{/products(sort='best')}">베스트</a>
+            <a th:href="@{/#event}">이벤트</a>
+        </nav>
+        <div class="header-actions">
+            <form th:action="@{/products}" method="get" class="search">
+                <input type="search" name="q" placeholder="검색" aria-label="상품 검색">
+            </form>
+            <th:block sec:authorize="!isAuthenticated()">
+                <a class="link" th:href="@{/login}">로그인</a>
+                <a class="link" th:href="@{/register}">회원가입</a>
+            </th:block>
+            <th:block sec:authorize="isAuthenticated()">
+                <a class="link" th:href="@{/orders}">주문내역</a>
+                <form th:action="@{/logout}" method="post" class="inline"><button class="link-btn" type="submit">로그아웃</button></form>
+            </th:block>
+            <a class="cart-pill" th:href="@{/cart}">장바구니<span th:if="${cartCount > 0}" class="count" th:text="${cartCount}">0</span></a>
+        </div>
+    </div>
+</header>
+
+<!-- 푸터 -->
+<footer th:fragment="footer" class="site-footer">
+    <div class="container">
+        <strong th:text="${brand.name}">LUMO</strong>
+        <p th:text="${brand.tagline}"></p>
+        <p class="muted">
+            <span th:text="${brand.company}"></span>
+            <span th:if="${!#strings.isEmpty(brand.contactEmail)}"> · <span th:text="${brand.contactEmail}"></span></span>
+        </p>
+    </div>
+</footer>
+
+<!-- 알림 메시지 -->
+<div th:fragment="flash" class="container">
+    <div class="alert ok" th:if="${message}" th:text="${message}"></div>
+    <div class="alert err" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<!-- 상품 카드 -->
+<a th:fragment="productCard(p)" class="product-card" th:href="@{/products/{id}(id=${p.id})}">
+    <div class="thumb">
+        <img th:if="${p.thumbnail != null}" th:src="@{${p.thumbnail}}" th:alt="${p.name}" loading="lazy">
+        <span th:if="${p.thumbnail == null}" class="ph">상품 이미지</span>
+        <span th:if="${p.status.name() == 'SOLD_OUT'}" class="badge soldout">품절</span>
+    </div>
+    <div class="name" th:text="${p.name}">상품명</div>
+    <div class="price" th:text="|${#numbers.formatInteger(p.price, 0, 'COMMA')}원|">0원</div>
+</a>
+
+<!-- 페이지네이션: baseUrl 은 컨트롤러가 만든 쿼리 포함 경로 -->
+<nav th:fragment="pagination(page, baseUrl)" class="pagination" th:if="${page.totalPages > 1}">
+    <a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+       th:href="${baseUrl + (#strings.contains(baseUrl, '?') ? '&' : '?') + 'page=' + i}"
+       th:classappend="${i == page.number} ? 'active'" th:text="${i + 1}">1</a>
+</nav>
+</body>
+</html>

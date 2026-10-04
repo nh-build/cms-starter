@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: cms-starter
+  config:
+    # 로컬 실행 시 프로젝트 루트의 .env 를 읽는다 (없어도 무방). Docker 에서는 환경변수로 주입.
+    import: optional:file:./.env[.properties]
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:cms}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USER:cms}
+    password: ${DB_PASSWORD:cms}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: true
+    properties:
+      hibernate.jdbc.time_zone: Asia/Seoul
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:false}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+  web:
+    resources:
+      cache:
+        period: 0
+
+server:
+  port: ${SERVER_PORT:8081}
+  servlet:
+    session:
+      timeout: 2h
+
+# ─────────────────────────────────────────────
+# 브랜드: 새 프로젝트에서는 여기(또는 .env)만 바꾸면 사이트 룩이 바뀐다.
+# ─────────────────────────────────────────────
+brand:
+  name: ${BRAND_NAME:LUMO}
+  tagline: ${BRAND_TAGLINE:가볍게 입는 데일리 웨어}
+  logo-path: ${BRAND_LOGO_PATH:}          # 비우면 텍스트 로고(name) 사용. 예: /brand/logo.svg
+  primary-color: ${BRAND_PRIMARY_COLOR:#4E90C4}
+  background-color: ${BRAND_BACKGROUND_COLOR:#F7FBFE}
+  font-family: ${BRAND_FONT_FAMILY:'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif}
+  font-css-url: ${BRAND_FONT_CSS_URL:https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css}
+  company: ${BRAND_COMPANY:LUMO Inc.}
+  contact-email: ${BRAND_CONTACT_EMAIL:help@example.com}
+  shipping-fee: ${SHIPPING_FEE:3000}
+  free-shipping-over: ${FREE_SHIPPING_OVER:50000}
+
+app:
+  upload-dir: ${UPLOAD_DIR:./uploads}
+  admin:
+    email: ${ADMIN_EMAIL:admin@example.com}
+    password: ${ADMIN_PASSWORD:}          # 비어 있으면 관리자 시드를 만들지 않는다 (.env 에서 설정)
+    name: ${ADMIN_NAME:관리자}
+
+# 포트원(아임포트) V1. 기본값은 포트원 공개 테스트 가맹점 식별코드. 실서비스 키는 .env 로 교체.
+portone:
+  imp-code: ${PORTONE_IMP_CODE:imp00000000}
+  pg: ${PORTONE_PG:html5_inicis}
+  api-key: ${PORTONE_API_KEY:}
+  api-secret: ${PORTONE_API_SECRET:}
+  # 키가 비어 있으면 서버 검증을 건너뛰고 테스트 결제로 처리 (개발 전용)
+  verify-enabled: ${PORTONE_VERIFY_ENABLED:false}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${product.name})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="detail">
+        <div class="gallery">
+            <div class="main-img">
+                <img th:if="${product.thumbnail != null}" id="mainImage" th:src="@{${product.thumbnail}}" th:alt="${product.name}">
+                <span th:if="${product.thumbnail == null}" class="ph">상품 이미지</span>
+            </div>
+            <div class="thumbs" th:if="${!product.images.isEmpty()}">
+                <img th:if="${product.thumbnail != null}" th:src="@{${product.thumbnail}}" alt="" data-thumb>
+                <img th:each="i : ${product.images}" th:src="@{${i.path}}" alt="" data-thumb>
+            </div>
+        </div>
+        <form class="info" th:action="@{/cart/add}" method="post">
+            <input type="hidden" name="productId" th:value="${product.id}">
+            <small class="muted" th:if="${product.category != null}" th:text="${product.category.name}"></small>
+            <h1 th:text="${product.name}">상품명</h1>
+            <div class="price big" th:text="|${#numbers.formatInteger(product.price, 0, 'COMMA')}원|">0원</div>
+            <hr>
+            <div class="opt-row" th:if="${!colors.isEmpty()}">
+                <span class="opt-label">색상</span>
+                <div class="swatches">
+                    <label th:each="c, st : ${colors}" class="swatch" th:title="${c.value}">
+                        <input type="radio" name="color" th:value="${c.value}" required>
+                        <span th:style="|background:${c.colorHex != null ? c.colorHex : '#ddd'}|"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="opt-row" th:if="${!sizes.isEmpty()}">
+                <span class="opt-label">사이즈</span>
+                <div class="size-chips">
+                    <label th:each="s : ${sizes}" class="size-chip">
+                        <input type="radio" name="size" th:value="${s.value}" required>
+                        <span th:text="${s.value}">M</span>
+                    </label>
+                </div>
+            </div>
+            <div class="opt-row">
+                <span class="opt-label">수량</span>
+                <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}" class="qty">
+                <span class="muted" th:if="${product.stock <= 5 and product.stock > 0}" th:text="|남은 수량 ${product.stock}개|"></span>
+            </div>
+            <p class="desc" th:if="${product.description}" th:text="${product.description}"></p>
+            <div class="actions" th:if="${product.purchasable}">
+                <button type="submit" class="btn outline">장바구니</button>
+                <button type="submit" name="buyNow" value="true" class="btn primary">바로 구매</button>
+            </div>
+            <div class="actions" th:unless="${product.purchasable}">
+                <button type="button" class="btn disabled" disabled>품절된 상품입니다</button>
+            </div>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/shop.js}"></script>
+</body>
+</html>

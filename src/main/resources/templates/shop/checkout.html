@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('주문/결제')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container">
+    <h1>주문 / 결제</h1>
+    <div class="checkout-layout">
+        <div>
+            <div class="lines">
+                <div class="line" th:each="i : ${items}">
+                    <div class="mini-thumb"><img th:if="${i.product.thumbnail != null}" th:src="@{${i.product.thumbnail}}" alt=""></div>
+                    <div class="line-info">
+                        <div class="line-name" th:text="${i.product.name + (i.size != null ? ' / ' + i.size : '') + (i.color != null ? ' / ' + i.color : '')}">상품</div>
+                        <div class="muted" th:text="|수량 ${i.quantity}|"></div>
+                    </div>
+                    <div class="line-price"><strong th:text="|${#numbers.formatInteger(i.lineTotal, 0, 'COMMA')}원|"></strong></div>
+                </div>
+            </div>
+
+            <form id="checkoutForm" class="form-card" th:attr="data-imp-code=${portone.impCode},data-pg=${portone.pg},data-email=${me.email},data-name=${me.name}" onsubmit="return false">
+                <h3>배송 정보</h3>
+                <label>받는 분<input name="receiverName" th:value="${me.name}" required maxlength="60"></label>
+                <label>연락처<input name="receiverPhone" th:value="${me.phone}" required maxlength="30" placeholder="010-0000-0000"></label>
+                <div class="row">
+                    <label>우편번호<input name="zipcode" maxlength="10"></label>
+                    <label class="grow">주소<input name="address" required maxlength="255"></label>
+                </div>
+                <label>배송 메모<input name="memo" maxlength="255"></label>
+
+                <h3>결제수단</h3>
+                <div class="pay-methods">
+                    <label class="pay-chip"><input type="radio" name="payMethod" value="CARD" checked><span>카드</span></label>
+                    <label class="pay-chip"><input type="radio" name="payMethod" value="TRANS"><span>계좌이체</span></label>
+                    <label class="pay-chip"><input type="radio" name="payMethod" value="KAKAO"><span>간편결제</span></label>
+                </div>
+                <p class="muted small">테스트 모드로 연동되어 실제 결제는 발생하지 않습니다.</p>
+            </form>
+        </div>
+        <aside class="summary">
+            <h3>결제 금액</h3>
+            <dl>
+                <dt>상품금액</dt><dd th:text="|${#numbers.formatInteger(itemsTotal, 0, 'COMMA')}원|"></dd>
+                <dt>배송비</dt><dd th:text="|${#numbers.formatInteger(shippingFee, 0, 'COMMA')}원|"></dd>
+            </dl>
+            <div class="total"><span>총 결제금액</span><strong th:text="|${#numbers.formatInteger(total, 0, 'COMMA')}원|"></strong></div>
+            <button id="payButton" class="btn primary block" type="button">결제하기</button>
+            <p id="payError" class="alert err" hidden></p>
+        </aside>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script th:src="@{/js/checkout.js}"></script>
+</body>
+</html>

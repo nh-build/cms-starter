@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('관리자 로그인')}"></head>
+<body class="login-body">
+<form class="login-card" th:action="@{/admin/login}" method="post">
+    <h1><span th:text="${brand.name}">LUMO</span> Admin</h1>
+    <div class="alert err" th:if="${param.error}">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+    <div class="alert ok" th:if="${param.logout}">로그아웃되었습니다.</div>
+    <label>이메일<input type="email" name="username" required autofocus></label>
+    <label>비밀번호<input type="password" name="password" required></label>
+    <button class="btn primary block" type="submit">로그인</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('상품 등록/수정')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1 th:text="${product == null} ? '상품 등록' : '상품 수정'">상품 등록</h1>
+    <form class="card form" method="post" enctype="multipart/form-data" th:object="${form}"
+          th:action="${product == null} ? @{/admin/products} : @{/admin/products/{id}(id=${product.id})}">
+        <div class="alert err" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+        <label>상품명<input th:field="*{name}" required>
+            <small class="err-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small></label>
+        <div class="row">
+            <label>가격(원)<input type="number" th:field="*{price}" min="0" required>
+                <small class="err-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small></label>
+            <label>재고<input type="number" th:field="*{stock}" min="0" required>
+                <small class="err-text" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></small></label>
+            <label>상태
+                <select th:field="*{status}"><option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}"></option></select></label>
+            <label>카테고리
+                <select th:field="*{categoryId}"><option value="">- 없음 -</option>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option></select></label>
+        </div>
+        <label>설명<textarea th:field="*{description}" rows="4"></textarea></label>
+        <div class="checks">
+            <label><input type="checkbox" th:field="*{featured}"> 메인 추천</label>
+            <label><input type="checkbox" th:field="*{newArrival}"> 신상품</label>
+            <label><input type="checkbox" th:field="*{best}"> 베스트</label>
+        </div>
+        <div class="row">
+            <label>색상 옵션 (한 줄에 하나, 이름=#색상코드)
+                <textarea th:field="*{colors}" rows="4" placeholder="블랙=#23252B&#10;베이지=#B8A88F"></textarea></label>
+            <label>사이즈 옵션 (쉼표 구분)
+                <input th:field="*{sizes}" placeholder="S,M,L"></label>
+        </div>
+        <label>대표 이미지
+            <input type="file" name="thumbnailFile" accept="image/*">
+            <div class="mini-thumb big" th:if="${product != null and product.thumbnail != null}"><img th:src="@{${product.thumbnail}}" alt=""></div></label>
+        <label>추가 이미지 (여러 장 선택 가능)<input type="file" name="imageFiles" accept="image/*" multiple></label>
+        <div class="img-list" th:if="${product != null and !product.images.isEmpty()}">
+            <div th:each="i : ${product.images}" class="img-item">
+                <div class="mini-thumb big"><img th:src="@{${i.path}}" alt=""></div>
+                <button class="link-btn danger" type="submit" formnovalidate
+                        th:formaction="@{/admin/products/{id}/images/{iid}/delete(id=${product.id},iid=${i.id})}"
+                        onclick="return confirm('이미지를 삭제할까요?')">삭제</button>
+            </div>
+        </div>
+        <div class="form-actions">
+            <a class="btn outline" th:href="@{/admin/products}">취소</a>
+            <button class="btn primary" type="submit">저장</button>
+        </div>
+    </form>
+</main>
+</div>
+</body>
+</html>

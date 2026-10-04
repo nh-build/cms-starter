@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('메인 레이아웃')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>메인 레이아웃</h1>
+    <p class="muted">블록을 드래그해 메인 화면 순서를 바꾸고, 스위치로 표시/숨김을 전환하세요. 변경은 즉시 저장됩니다.</p>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div id="saveStatus" class="save-status" hidden></div>
+
+    <ul id="sectionList" class="section-list">
+        <li th:each="s : ${sections}" th:attr="data-id=${s.id}" class="section-item">
+            <span class="handle" title="드래그해서 이동">⋮⋮</span>
+            <span class="type-tag" th:text="${s.type.label}">타입</span>
+            <form th:action="@{/admin/sections/{id}/title(id=${s.id})}" method="post" class="title-form">
+                <input name="title" th:value="${s.title}" aria-label="섹션 제목">
+                <button class="btn small outline" type="submit">이름 저장</button>
+            </form>
+            <label class="switch" title="표시/숨김">
+                <input type="checkbox" class="toggle" th:checked="${s.visible}" th:attr="data-id=${s.id}">
+                <span class="slider"></span>
+            </label>
+        </li>
+    </ul>
+
+    <form class="card pad form" th:action="@{/admin/sections/settings}" method="post">
+        <h3>히어로 / 그리드 설정</h3>
+        <div class="row">
+            <label>히어로 프리셋
+                <select name="heroPreset">
+                    <option value="BANNER" th:selected="${heroPreset == 'BANNER'}">가로 배너형</option>
+                    <option value="SLIDE" th:selected="${heroPreset == 'SLIDE'}">슬라이드형</option>
+                    <option value="NONE" th:selected="${heroPreset == 'NONE'}">배너 없음</option>
+                </select></label>
+            <label>상품 그리드 열 수
+                <select name="gridColumns">
+                    <option value="2" th:selected="${gridColumns == 2}">2단</option>
+                    <option value="3" th:selected="${gridColumns == 3}">3단</option>
+                    <option value="4" th:selected="${gridColumns == 4}">4단</option>
+                </select></label>
+        </div>
+        <div class="form-actions"><button class="btn primary" type="submit">설정 저장</button></div>
+    </form>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script th:src="@{/js/admin-sections.js}"></script>
+</body>
+</html>

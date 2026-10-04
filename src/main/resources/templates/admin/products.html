@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('상품 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <div class="page-head"><h1>상품 관리</h1><a class="btn primary" th:href="@{/admin/products/new}">+ 상품 등록</a></div>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div class="card">
+        <table class="table">
+            <thead><tr><th>이미지</th><th>상품명</th><th>카테고리</th><th>가격</th><th>재고</th><th>상태</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="p : ${page.content}">
+                <td><div class="mini-thumb"><img th:if="${p.thumbnail != null}" th:src="@{${p.thumbnail}}" alt=""></div></td>
+                <td><a th:href="@{/admin/products/{id}(id=${p.id})}"><strong th:text="${p.name}"></strong></a></td>
+                <td th:text="${p.category != null ? p.category.name : '-'}"></td>
+                <td th:text="|${#numbers.formatInteger(p.price, 0, 'COMMA')}원|"></td>
+                <td th:text="${p.stock}"></td>
+                <td><span class="pill" th:classappend="${p.status.name() == 'ON_SALE'} ? 'paid' : (${p.status.name() == 'SOLD_OUT'} ? 'pending' : 'canceled')" th:text="${p.status.label}"></span></td>
+                <td class="right">
+                    <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post" onsubmit="return confirm('삭제할까요?')">
+                        <button class="link-btn danger" type="submit">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${page.empty}"><td colspan="7" class="empty">등록된 상품이 없습니다.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/admin :: pagination(${page}, '/admin/products')}"></nav>
+</main>
+</div>
+</body>
+</html>

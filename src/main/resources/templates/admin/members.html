@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('회원 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>회원 관리</h1>
+    <div class="card">
+        <table class="table">
+            <thead><tr><th>번호</th><th>이름</th><th>이메일</th><th>연락처</th><th>권한</th><th>가입일</th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${page.content}">
+                <td th:text="${m.id}"></td><td th:text="${m.name}"></td><td th:text="${m.email}"></td>
+                <td th:text="${m.phone ?: '-'}"></td><td th:text="${m.role}"></td>
+                <td th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/admin :: pagination(${page}, '/admin/members')}"></nav>
+</main>
+</div>
+</body>
+</html>

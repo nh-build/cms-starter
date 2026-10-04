@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('주문 완료')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="container narrow">
+    <h1 th:text="${order.status.name() == 'PAID'} ? '주문이 완료되었습니다' : '주문 상세'">주문 상세</h1>
+    <div class="form-card">
+        <p>주문번호 <strong th:text="${order.orderNo}"></strong> · <span class="pill" th:classappend="${order.status.css}" th:text="${order.status.label}"></span></p>
+        <div class="line" th:each="i : ${order.items}">
+            <div class="mini-thumb"><img th:if="${i.thumbnail != null}" th:src="@{${i.thumbnail}}" alt=""></div>
+            <div class="line-info">
+                <div class="line-name" th:text="${i.productName}"></div>
+                <div class="muted" th:text="${i.optionLabel + ' · 수량 ' + i.quantity}"></div>
+            </div>
+            <div class="line-price"><strong th:text="|${#numbers.formatInteger(i.lineTotal, 0, 'COMMA')}원|"></strong></div>
+        </div>
+        <dl class="kv">
+            <dt>상품금액</dt><dd th:text="|${#numbers.formatInteger(order.itemsTotal, 0, 'COMMA')}원|"></dd>
+            <dt>배송비</dt><dd th:text="|${#numbers.formatInteger(order.shippingFee, 0, 'COMMA')}원|"></dd>
+            <dt>총 결제금액</dt><dd><strong th:text="|${#numbers.formatInteger(order.total, 0, 'COMMA')}원|"></strong></dd>
+            <dt>받는 분</dt><dd th:text="${order.receiverName + ' (' + order.receiverPhone + ')'}"></dd>
+            <dt>배송지</dt><dd th:text="${order.address}"></dd>
+        </dl>
+        <a class="btn outline" th:href="@{/products}">쇼핑 계속하기</a>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('카테고리 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>카테고리 관리</h1>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div class="card pad">
+        <div class="cat-row head"><span>이름</span><span>슬러그</span><span>순서</span><span>노출</span><span></span></div>
+        <form class="cat-row" th:each="c : ${categories}" th:action="@{/admin/categories}" method="post">
+            <input type="hidden" name="id" th:value="${c.id}">
+            <input name="name" th:value="${c.name}" required>
+            <input name="slug" th:value="${c.slug}">
+            <input type="number" name="sortOrder" th:value="${c.sortOrder}">
+            <input type="checkbox" name="visible" value="true" th:checked="${c.visible}">
+            <span class="nowrap">
+                <button class="btn small primary" type="submit">저장</button>
+                <button class="btn small outline" type="submit" th:formaction="@{/admin/categories/{id}/delete(id=${c.id})}" formnovalidate onclick="return confirm('삭제할까요?')">삭제</button>
+            </span>
+        </form>
+        <form class="cat-row" th:action="@{/admin/categories}" method="post">
+            <input name="name" placeholder="새 카테고리" required>
+            <input name="slug" placeholder="자동 생성">
+            <input type="number" name="sortOrder" value="0">
+            <input type="checkbox" name="visible" value="true" checked>
+            <span><button class="btn small primary" type="submit">추가</button></span>
+        </form>
+    </div>
+</main>
+</div>
+</body>
+</html>

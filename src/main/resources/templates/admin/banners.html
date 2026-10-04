@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('배너 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>배너 관리</h1>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div class="card pad banner-form" th:each="b : ${banners}">
+        <form th:action="@{/admin/banners}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" th:value="${b.id}">
+            <div class="row">
+                <label>상단 문구<input name="eyebrow" th:value="${b.eyebrow}"></label>
+                <label class="grow">제목<input name="title" th:value="${b.title}" required></label>
+            </div>
+            <label>부제<input name="subtitle" th:value="${b.subtitle}"></label>
+            <div class="row">
+                <label>버튼 문구<input name="ctaLabel" th:value="${b.ctaLabel}"></label>
+                <label class="grow">버튼 링크 (/ 로 시작하거나 http(s)://)<input name="ctaUrl" th:value="${b.ctaUrl}"></label>
+                <label>순서<input type="number" name="sortOrder" th:value="${b.sortOrder}" class="qty"></label>
+            </div>
+            <div class="row">
+                <label class="grow">이미지 (선택)<input type="file" name="imageFile" accept="image/*"></label>
+                <div class="mini-thumb big" th:if="${b.image != null}"><img th:src="@{${b.image}}" alt=""></div>
+                <label class="check"><input type="checkbox" name="visible" value="true" th:checked="${b.visible}"> 노출</label>
+            </div>
+            <div class="form-actions">
+                <button class="btn small outline" type="submit" th:formaction="@{/admin/banners/{id}/delete(id=${b.id})}" formnovalidate onclick="return confirm('삭제할까요?')">삭제</button>
+                <button class="btn small primary" type="submit">저장</button>
+            </div>
+        </form>
+    </div>
+    <div class="card pad banner-form">
+        <h3>새 배너 추가</h3>
+        <form th:action="@{/admin/banners}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <label>상단 문구<input name="eyebrow" placeholder="NEW SEASON"></label>
+                <label class="grow">제목<input name="title" required></label>
+            </div>
+            <label>부제<input name="subtitle"></label>
+            <div class="row">
+                <label>버튼 문구<input name="ctaLabel" placeholder="지금 보기"></label>
+                <label class="grow">버튼 링크<input name="ctaUrl" placeholder="/products"></label>
+                <label>순서<input type="number" name="sortOrder" value="0" class="qty"></label>
+            </div>
+            <div class="row">
+                <label class="grow">이미지 (선택)<input type="file" name="imageFile" accept="image/*"></label>
+                <label class="check"><input type="checkbox" name="visible" value="true" checked> 노출</label>
+            </div>
+            <div class="form-actions"><button class="btn small primary" type="submit">추가</button></div>
+        </form>
+    </div>
+</main>
+</div>
+</body>
+</html>

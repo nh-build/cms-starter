@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('주문 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>주문 관리</h1>
+    <div class="chips">
+        <a class="chip" th:classappend="${status == null} ? 'on'" th:href="@{/admin/orders}">전체</a>
+        <a th:each="s : ${statuses}" class="chip" th:classappend="${s == status} ? 'on'" th:href="@{/admin/orders(status=${s})}" th:text="${s.label}"></a>
+    </div>
+    <div class="card">
+        <table class="table">
+            <thead><tr><th>주문번호</th><th>주문자</th><th>상품</th><th>금액</th><th>주문일</th><th>상태</th></tr></thead>
+            <tbody>
+            <tr th:each="o : ${page.content}">
+                <td><a th:href="@{/admin/orders/{id}(id=${o.id})}" th:text="${o.orderNo}"></a></td>
+                <td th:text="${o.member.name}"></td>
+                <td th:text="${o.summary}"></td>
+                <td th:text="|${#numbers.formatInteger(o.total, 0, 'COMMA')}원|"></td>
+                <td th:text="${#temporals.format(o.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td><span class="pill" th:classappend="${o.status.css}" th:text="${o.status.label}"></span></td>
+            </tr>
+            <tr th:if="${page.empty}"><td colspan="6" class="empty">주문이 없습니다.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/admin :: pagination(${page}, ${status == null ? '/admin/orders' : '/admin/orders?status=' + status})}"></nav>
+</main>
+</div>
+</body>
+</html>
