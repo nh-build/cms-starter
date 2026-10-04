@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('메뉴 관리')}"></head>
+<body>
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>메뉴 관리</h1>
+    <p class="muted">스토어 상단 메뉴입니다. 카드를 드래그해 순서를 바꾸고, 스위치로 표시/숨김을 전환하세요. 순서와 표시 변경은 즉시 저장됩니다. 표시 중인 메뉴가 없으면 기본 메뉴(전체상품)가 나타납니다.</p>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+    <div id="saveStatus" class="save-status" hidden></div>
+
+    <ul id="menuList" class="section-list" data-sortable
+        th:attr="data-order-url=@{/admin/menus/order},data-visible-url=@{/admin/menus/-ID-/visible}">
+        <li th:each="m : ${items}" th:attr="data-id=${m.id}" class="section-item">
+            <span class="handle" title="드래그해서 이동"></span>
+            <span class="type-tag" th:text="${m.targetType.name() == 'CATEGORY'} ? '카테고리' : 'URL'">URL</span>
+            <div class="item-main">
+                <span class="item-label" th:text="${m.label}">전체상품</span>
+                <span class="item-sub" th:if="${m.targetType.name() == 'CATEGORY'}"
+                      th:text="${m.category != null ? '카테고리: ' + m.category.name : '카테고리 없음'}"></span>
+                <span class="item-sub" th:if="${m.targetType.name() == 'URL'}" th:text="${m.url}"></span>
+            </div>
+            <div class="item-actions">
+                <button type="button" class="btn small outline" th:attr="data-edit=${m.id}"
+                        onclick="var p=document.getElementById('edit-'+this.dataset.edit);p.hidden=!p.hidden">수정</button>
+                <form th:action="@{/admin/menus/{id}/delete(id=${m.id})}" method="post" onsubmit="return confirm('이 메뉴를 삭제할까요?')">
+                    <button type="submit" class="link-btn danger">삭제</button>
+                </form>
+                <label class="switch" title="표시/숨김">
+                    <input type="checkbox" class="toggle" th:checked="${m.visible}" th:attr="data-id=${m.id}">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="edit-panel" th:id="|edit-${m.id}|" hidden>
+                <form class="form" style="padding:0" th:action="@{/admin/menus}" method="post" data-menu-form>
+                    <input type="hidden" name="id" th:value="${m.id}">
+                    <input type="hidden" name="visible" th:value="${m.visible}">
+                    <div class="row">
+                        <label class="grow">이름<input name="label" th:value="${m.label}" required maxlength="40"></label>
+                    </div>
+                    <div class="radio-row">
+                        <label><input type="radio" name="targetType" value="CATEGORY" th:checked="${m.targetType.name() == 'CATEGORY'}"> 카테고리 연결</label>
+                        <label><input type="radio" name="targetType" value="URL" th:checked="${m.targetType.name() == 'URL'}"> 직접 URL 입력</label>
+                    </div>
+                    <label data-for="CATEGORY">카테고리
+                        <select name="categoryId">
+                            <option value="">- 선택 -</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.visible ? c.name : c.name + ' (숨김)'}"
+                                    th:selected="${m.category != null and m.category.id == c.id}"></option>
+                        </select></label>
+                    <label data-for="URL">URL (/ 로 시작하거나 http(s)://)
+                        <input name="url" th:value="${m.url}" placeholder="/products?sort=new" maxlength="255"></label>
+                    <div class="form-actions"><button class="btn small primary" type="submit">저장</button></div>
+                </form>
+            </div>
+        </li>
+        <li th:if="${items.isEmpty()}" class="section-item"><span class="muted">등록된 메뉴가 없습니다. 아래에서 추가하세요.</span></li>
+    </ul>
+
+    <form class="card pad form wide" th:action="@{/admin/menus}" method="post" data-menu-form>
+        <h3>메뉴 추가</h3>
+        <input type="hidden" name="visible" value="true">
+        <label>이름<input name="label" required maxlength="40" placeholder="예: 신상품"></label>
+        <div class="radio-row">
+            <label><input type="radio" name="targetType" value="CATEGORY" checked> 카테고리 연결</label>
+            <label><input type="radio" name="targetType" value="URL"> 직접 URL 입력</label>
+        </div>
+        <label data-for="CATEGORY">카테고리
+            <select name="categoryId">
+                <option value="">- 선택 -</option>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.visible ? c.name : c.name + ' (숨김)'}"></option>
+            </select></label>
+        <label data-for="URL">URL (/ 로 시작하거나 http(s)://)
+            <input name="url" placeholder="/products?sort=new" maxlength="255"></label>
+        <div class="form-actions"><button class="btn primary" type="submit">추가</button></div>
+    </form>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script th:src="@{/js/admin-sortable.js}"></script>
+<script th:src="@{/js/admin-menus.js}"></script>
+</body>
+</html>

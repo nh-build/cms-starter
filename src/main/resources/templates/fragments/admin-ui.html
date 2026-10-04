@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- 히어로 프리셋 와이어프레임 (색은 CSS 클래스/변수로 지정하므로 브랜드색과 함께 바뀐다) -->
+<svg th:fragment="heroWire(type)" viewBox="0 0 160 100" class="wire-svg" aria-hidden="true" th:switch="${type}">
+    <g th:case="'BANNER'">
+        <rect class="w1" x="8" y="8" width="144" height="40" rx="4"/>
+        <rect class="w2" x="8" y="56" width="44" height="36" rx="3"/>
+        <rect class="w2" x="58" y="56" width="44" height="36" rx="3"/>
+        <rect class="w2" x="108" y="56" width="44" height="36" rx="3"/>
+    </g>
+    <g th:case="'FULL'">
+        <rect class="w3" x="0" y="0" width="160" height="100" rx="6"/>
+        <rect class="wl" x="12" y="11" width="20" height="4" rx="2"/>
+        <rect class="wl" x="66" y="9" width="28" height="7" rx="2"/>
+        <rect class="wl" x="116" y="11" width="10" height="4" rx="2"/>
+        <rect class="wl" x="130" y="11" width="10" height="4" rx="2"/>
+        <rect class="wl" x="144" y="11" width="8" height="4" rx="2"/>
+        <rect class="wl" x="12" y="76" width="44" height="6" rx="2"/>
+        <rect class="wl" x="12" y="87" width="26" height="3" rx="1.5"/>
+    </g>
+    <g th:case="'NONE'">
+        <rect class="w2" x="8" y="8" width="44" height="40" rx="3"/>
+        <rect class="w2" x="58" y="8" width="44" height="40" rx="3"/>
+        <rect class="w2" x="108" y="8" width="44" height="40" rx="3"/>
+        <rect class="w2" x="8" y="54" width="44" height="40" rx="3"/>
+        <rect class="w2" x="58" y="54" width="44" height="40" rx="3"/>
+        <rect class="w2" x="108" y="54" width="44" height="40" rx="3"/>
+    </g>
+    <g th:case="'SLIDE'">
+        <rect class="w1" x="8" y="8" width="144" height="40" rx="4"/>
+        <circle class="dot-on" cx="72" cy="56" r="2.6"/>
+        <circle class="dot" cx="80" cy="56" r="2.6"/>
+        <circle class="dot" cx="88" cy="56" r="2.6"/>
+        <rect class="w2" x="8" y="66" width="44" height="26" rx="3"/>
+        <rect class="w2" x="58" y="66" width="44" height="26" rx="3"/>
+        <rect class="w2" x="108" y="66" width="44" height="26" rx="3"/>
+    </g>
+</svg>
+
+<!-- 그리드 열 수 아이콘 -->
+<svg th:fragment="gridIcon(cols)" viewBox="0 0 80 24" class="grid-icon" aria-hidden="true">
+    <rect th:each="i : ${#numbers.sequence(0, cols - 1)}" class="gi"
+          th:attr="x=${i * (80.0 / cols) + 1.5},width=${80.0 / cols - 3}" y="2" height="20" rx="2"/>
+</svg>
+</body>
+</html>

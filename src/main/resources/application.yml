@@ -35,7 +35,8 @@ server:
       timeout: 2h
 
 # ─────────────────────────────────────────────
-# 브랜드: 새 프로젝트에서는 여기(또는 .env)만 바꾸면 사이트 룩이 바뀐다.
+# 브랜드 기본값: 새 프로젝트에서는 여기(또는 .env)만 바꿔도 되고,
+# 운영 중에는 관리자 > 디자인 설정에서 바꾼 값(DB)이 이 기본값보다 우선한다.
 # ─────────────────────────────────────────────
 brand:
   name: ${BRAND_NAME:LUMO}
@@ -43,8 +44,7 @@ brand:
   logo-path: ${BRAND_LOGO_PATH:}          # 비우면 텍스트 로고(name) 사용. 예: /brand/logo.svg
   primary-color: ${BRAND_PRIMARY_COLOR:#4E90C4}
   background-color: ${BRAND_BACKGROUND_COLOR:#F7FBFE}
-  font-family: ${BRAND_FONT_FAMILY:'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif}
-  font-css-url: ${BRAND_FONT_CSS_URL:https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css}
+  font-preset: ${BRAND_FONT_PRESET:PRETENDARD}   # PRETENDARD | NANUM_GOTHIC | NANUM_SQUARE_ROUND | NOTO_SANS_KR | IBM_PLEX_SANS_KR
   company: ${BRAND_COMPANY:LUMO Inc.}
   contact-email: ${BRAND_CONTACT_EMAIL:help@example.com}
   shipping-fee: ${SHIPPING_FEE:3000}

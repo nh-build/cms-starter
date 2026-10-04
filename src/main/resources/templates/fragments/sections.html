@@ -2,22 +2,41 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- 히어로: 프리셋 BANNER(가로배너) / SLIDE(슬라이드) / NONE(없음) -->
-<section th:fragment="hero" th:if="${heroPreset != 'NONE' and !banners.isEmpty()}" class="section hero">
-    <div th:if="${heroPreset == 'BANNER'}" th:with="b=${banners[0]}">
-        <div th:replace="~{fragments/sections :: bannerSlide(${b})}"></div>
-    </div>
-    <div th:if="${heroPreset == 'SLIDE'}" class="slider" data-slider>
-        <div class="slides">
-            <th:block th:each="b : ${banners}"><div th:replace="~{fragments/sections :: bannerSlide(${b})}"></div></th:block>
-        </div>
-        <div class="dots" th:if="${banners.size() > 1}">
-            <button type="button" th:each="b, st : ${banners}" th:data-index="${st.index}" aria-label="슬라이드 이동"></button>
-        </div>
-    </div>
-</section>
+<!-- 히어로: 프리셋 BANNER(가로 배너) / FULL(풀 이미지) / SLIDE(슬라이드) / NONE(없음) -->
+<th:block th:fragment="hero">
+    <th:block th:if="${!banners.isEmpty()}">
+        <!-- 풀 이미지형: 컨테이너 밖에서 화면 폭 전체. 헤더 오버레이는 HomeController 의 heroOverlay 로 결정 -->
+        <section th:if="${heroPreset == 'FULL'}" class="hero-full" th:classappend="${banners[0].image != null} ? 'has-image'" th:with="b=${banners[0]}">
+            <img th:if="${b.image != null}" class="hero-full-img" th:src="@{${b.image}}" th:alt="${b.title}" fetchpriority="high">
+            <div class="hero-full-scrim"></div>
+            <div class="hero-full-text" th:if="${heroShowText}">
+                <div class="container">
+                    <small th:if="${b.eyebrow}" th:text="${b.eyebrow}">NEW SEASON</small>
+                    <h2 th:text="${b.title}">타이틀</h2>
+                    <p th:if="${b.subtitle}" th:text="${b.subtitle}"></p>
+                    <a th:if="${b.ctaLabel != null and b.ctaUrl != null}" class="hero-cta" th:href="${b.ctaUrl}" th:text="${b.ctaLabel}">지금 보기</a>
+                </div>
+            </div>
+        </section>
 
-<div th:fragment="bannerSlide(b)" class="banner" th:styleappend="${b.image != null} ? |background-image:linear-gradient(90deg, rgba(0,0,0,.35), rgba(0,0,0,.05)), url('${b.image}');|">
+        <section th:if="${heroPreset == 'BANNER'}" class="container section hero" th:with="b=${banners[0]}">
+            <div th:replace="~{fragments/sections :: bannerSlide(${b})}"></div>
+        </section>
+
+        <section th:if="${heroPreset == 'SLIDE'}" class="container section hero">
+            <div class="slider" data-slider>
+                <div class="slides">
+                    <th:block th:each="b : ${banners}"><div th:replace="~{fragments/sections :: bannerSlide(${b})}"></div></th:block>
+                </div>
+                <div class="dots" th:if="${banners.size() > 1}">
+                    <button type="button" th:each="b, st : ${banners}" th:data-index="${st.index}" aria-label="슬라이드 이동"></button>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</th:block>
+
+<div th:fragment="bannerSlide(b)" class="banner" th:classappend="${b.image != null} ? 'has-image'" th:styleappend="${b.image != null} ? |background-image:linear-gradient(90deg, rgba(0,0,0,.35), rgba(0,0,0,.05)), url('${b.image}');|">
     <small th:if="${b.eyebrow}" th:text="${b.eyebrow}">NEW SEASON</small>
     <h2 th:text="${b.title}">타이틀</h2>
     <p th:if="${b.subtitle}" th:text="${b.subtitle}"></p>
@@ -25,7 +44,7 @@
 </div>
 
 <!-- 상품 그리드 섹션 (추천/신상품/베스트 공용) -->
-<section th:fragment="productGrid(title, items, moreUrl)" class="section" th:if="${!items.isEmpty()}">
+<section th:fragment="productGrid(title, items, moreUrl)" class="container section" th:if="${!items.isEmpty()}">
     <div class="section-head">
         <h2 th:text="${title}">추천 상품</h2>
         <a class="more" th:href="@{${moreUrl}}">더보기</a>
@@ -36,7 +55,7 @@
 </section>
 
 <!-- 카테고리 섹션 -->
-<section th:fragment="categories(title)" class="section" th:if="${!categories.isEmpty()}">
+<section th:fragment="categories(title)" class="container section" th:if="${!categories.isEmpty()}">
     <div class="section-head"><h2 th:text="${title}">카테고리</h2></div>
     <div class="chips">
         <a th:each="c : ${categories}" class="chip" th:href="@{/products(category=${c.slug})}" th:text="${c.name}">아우터</a>
@@ -44,7 +63,7 @@
 </section>
 
 <!-- 이벤트 섹션: 배너를 카드로 노출 -->
-<section th:fragment="event(title)" id="event" class="section" th:if="${!banners.isEmpty()}">
+<section th:fragment="event(title)" id="event" class="container section" th:if="${!banners.isEmpty()}">
     <div class="section-head"><h2 th:text="${title}">이벤트</h2></div>
     <div class="event-grid">
         <th:block th:each="b : ${banners}"><div th:replace="~{fragments/sections :: bannerSlide(${b})}"></div></th:block>

@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head('홈')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
-<main class="container">
+<main class="home">
     <th:block th:each="s : ${sections}" th:switch="${s.type.name()}">
         <th:block th:case="'HERO'"><th:block th:replace="~{fragments/sections :: hero}"></th:block></th:block>
         <th:block th:case="'FEATURED'"><th:block th:replace="~{fragments/sections :: productGrid(${s.title}, ${featured}, '/products')}"></th:block></th:block>
@@ -14,6 +14,5 @@
     </th:block>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
-<script th:src="@{/js/shop.js}"></script>
 </body>
 </html>

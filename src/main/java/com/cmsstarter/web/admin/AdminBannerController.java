@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cmsstarter.domain.content.Banner;
 import com.cmsstarter.domain.content.BannerRepository;
 import com.cmsstarter.support.FileStorage;
+import com.cmsstarter.support.UrlSafety;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,7 +62,7 @@ public class AdminBannerController {
         b.setEyebrow(eyebrow);
         b.setSubtitle(subtitle);
         b.setCtaLabel(ctaLabel);
-        b.setCtaUrl(safeUrl(ctaUrl));
+        b.setCtaUrl(UrlSafety.safeUrl(ctaUrl));
         b.setSortOrder(sortOrder);
         b.setVisible(visible);
         banners.save(b);
@@ -79,12 +80,4 @@ public class AdminBannerController {
         return "redirect:/admin/banners";
     }
 
-    /** javascript: 등 위험한 스킴을 막고 사이트 내부 경로 또는 http(s) 만 허용. */
-    private static String safeUrl(String url) {
-        if (url == null || url.isBlank()) {
-            return null;
-        }
-        String u = url.trim();
-        return u.startsWith("/") && !u.startsWith("//") || u.startsWith("http://") || u.startsWith("https://") ? u : null;
-    }
 }

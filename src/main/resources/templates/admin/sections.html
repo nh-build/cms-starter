@@ -6,46 +6,83 @@
 <aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
 <main>
     <h1>메인 레이아웃</h1>
-    <p class="muted">블록을 드래그해 메인 화면 순서를 바꾸고, 스위치로 표시/숨김을 전환하세요. 변경은 즉시 저장됩니다.</p>
+    <p class="muted">블록을 드래그해 순서를 바꾸고, 레이아웃은 썸네일을 눌러 고르세요. 변경은 즉시 저장됩니다.</p>
     <div th:replace="~{fragments/admin :: flash}"></div>
     <div id="saveStatus" class="save-status" hidden></div>
 
-    <ul id="sectionList" class="section-list">
-        <li th:each="s : ${sections}" th:attr="data-id=${s.id}" class="section-item">
-            <span class="handle" title="드래그해서 이동">⋮⋮</span>
-            <span class="type-tag" th:text="${s.type.label}">타입</span>
-            <form th:action="@{/admin/sections/{id}/title(id=${s.id})}" method="post" class="title-form">
-                <input name="title" th:value="${s.title}" aria-label="섹션 제목">
-                <button class="btn small outline" type="submit">이름 저장</button>
-            </form>
-            <label class="switch" title="표시/숨김">
-                <input type="checkbox" class="toggle" th:checked="${s.visible}" th:attr="data-id=${s.id}">
-                <span class="slider"></span>
-            </label>
-        </li>
-    </ul>
+    <div class="layout-grid">
+        <!-- 왼쪽: 섹션 블록 (드래그 + 표시 토글) -->
+        <section>
+            <ul id="sectionList" class="section-list" data-sortable
+                th:attr="data-order-url=@{/admin/sections/order},data-visible-url=@{/admin/sections/-ID-/visible}">
+                <li th:each="s : ${sections}" th:attr="data-id=${s.id}" class="section-item">
+                    <span class="handle" title="드래그해서 이동"></span>
+                    <span class="type-tag" th:text="${s.type.label}">타입</span>
+                    <form th:action="@{/admin/sections/{id}/title(id=${s.id})}" method="post" class="title-form">
+                        <input class="title-input" name="title" th:value="${s.title}" aria-label="섹션 제목" maxlength="100">
+                        <button class="btn small outline title-save" type="submit" hidden>저장</button>
+                    </form>
+                    <label class="switch" title="표시/숨김">
+                        <input type="checkbox" class="toggle" th:checked="${s.visible}" th:attr="data-id=${s.id}" aria-label="표시">
+                        <span class="slider"></span>
+                    </label>
+                </li>
+            </ul>
+        </section>
 
-    <form class="card pad form" th:action="@{/admin/sections/settings}" method="post">
-        <h3>히어로 / 그리드 설정</h3>
-        <div class="row">
-            <label>히어로 프리셋
-                <select name="heroPreset">
-                    <option value="BANNER" th:selected="${heroPreset == 'BANNER'}">가로 배너형</option>
-                    <option value="SLIDE" th:selected="${heroPreset == 'SLIDE'}">슬라이드형</option>
-                    <option value="NONE" th:selected="${heroPreset == 'NONE'}">배너 없음</option>
-                </select></label>
-            <label>상품 그리드 열 수
-                <select name="gridColumns">
-                    <option value="2" th:selected="${gridColumns == 2}">2단</option>
-                    <option value="3" th:selected="${gridColumns == 3}">3단</option>
-                    <option value="4" th:selected="${gridColumns == 4}">4단</option>
-                </select></label>
-        </div>
-        <div class="form-actions"><button class="btn primary" type="submit">설정 저장</button></div>
-    </form>
+        <!-- 오른쪽: 히어로 프리셋 / 그리드 열 수 (클릭 즉시 저장) -->
+        <form th:action="@{/admin/sections/settings}" method="post" data-autosave class="design-panel">
+            <h2 class="panel-title">히어로 프리셋</h2>
+            <p class="muted small">메인 상단 영역 스타일</p>
+            <div class="preset-grid">
+                <label class="preset-card" th:each="p : ${heroPresets}">
+                    <input type="radio" name="heroPreset" th:value="${p.key}" th:checked="${heroPreset == p.key}">
+                    <span class="card-body">
+                        <span class="wire"><svg th:replace="~{fragments/admin-ui :: heroWire(${p.key})}"></svg></span>
+                        <span class="card-name" th:text="${p.label}">가로 배너형</span>
+                        <span class="check" aria-hidden="true">✓</span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- 풀 이미지형을 골랐을 때만 보이는 옵션 (CSS :has) -->
+            <div class="full-options">
+                <h3 class="sub-title">풀 이미지형 옵션</h3>
+                <div class="opt-line">
+                    <span class="opt-name">헤더 글자색</span>
+                    <div class="segmented">
+                        <label><input type="radio" name="navTone" value="LIGHT" th:checked="${heroNavTone == 'LIGHT'}"><span>밝게 (흰색)</span></label>
+                        <label><input type="radio" name="navTone" value="DARK" th:checked="${heroNavTone == 'DARK'}"><span>어둡게</span></label>
+                    </div>
+                </div>
+                <div class="opt-line">
+                    <span class="opt-name">히어로 문구</span>
+                    <div class="segmented">
+                        <label><input type="radio" name="showText" value="true" th:checked="${heroShowText}"><span>표시</span></label>
+                        <label><input type="radio" name="showText" value="false" th:checked="${!heroShowText}"><span>숨김</span></label>
+                    </div>
+                </div>
+                <p class="muted small">'메인 배너' 블록이 맨 위에 있을 때 헤더가 이미지 위에 겹쳐집니다. 이미지와 문구는
+                    <a th:href="@{/admin/banners}">배너 관리</a>의 첫 번째 노출 배너를 사용합니다.</p>
+            </div>
+
+            <h2 class="panel-title">상품 그리드 열 수</h2>
+            <div class="grid-choices">
+                <label class="grid-choice" th:each="n : ${#numbers.sequence(2, 4)}">
+                    <input type="radio" name="gridColumns" th:value="${n}" th:checked="${gridColumns == n}">
+                    <span class="card-body">
+                        <svg th:replace="~{fragments/admin-ui :: gridIcon(${n})}"></svg>
+                        <span class="card-name" th:text="|${n}단|">4단</span>
+                    </span>
+                </label>
+            </div>
+            <noscript><div class="form-actions"><button class="btn primary" type="submit">설정 저장</button></div></noscript>
+        </form>
+    </div>
 </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script th:src="@{/js/admin-sections.js}"></script>
+<script th:src="@{/js/admin-sortable.js}"></script>
+<script th:src="@{/js/admin-layout.js}"></script>
 </body>
 </html>

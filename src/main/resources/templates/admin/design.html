@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('디자인 설정')}"></head>
+<body>
+<!-- 폰트 미리보기를 위해 이 페이지에서만 프리셋 5종 CSS 를 모두 로드한다 -->
+<link rel="stylesheet" th:each="f : ${fonts}" th:href="${f.cssUrl}">
+<div class="shell">
+<aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
+<main>
+    <h1>디자인 설정</h1>
+    <p class="muted">사이트명, 로고, 색상, 폰트를 한 곳에서 관리합니다. 저장하면 스토어와 관리자에 바로 반영됩니다. 입력 중에는 이 화면에서 미리 확인할 수 있습니다.</p>
+    <div th:replace="~{fragments/admin :: flash}"></div>
+
+    <form class="design-form" th:action="@{/admin/design}" method="post" enctype="multipart/form-data" th:object="${form}" data-design-form>
+
+        <section class="card pad">
+            <h2 class="panel-title">사이트 정보</h2>
+            <div class="row">
+                <label class="grow">사이트명
+                    <input name="brandName" th:value="*{brandName}" required maxlength="40">
+                    <small class="muted">헤더, 푸터, 브라우저 탭 제목에 표시됩니다. 로고가 없으면 사이트명이 로고 대신 쓰입니다.</small></label>
+            </div>
+            <div class="logo-row">
+                <div class="logo-preview" th:classappend="${!brand.hasLogo()} ? 'empty'">
+                    <img th:if="${brand.hasLogo()}" th:src="@{${brand.logoPath}}" alt="현재 로고">
+                    <span th:unless="${brand.hasLogo()}" th:text="${brand.name}">LUMO</span>
+                </div>
+                <div class="logo-fields">
+                    <label>로고 이미지 (PNG, JPG, WebP)
+                        <input type="file" name="logoFile" accept="image/png,image/jpeg,image/webp"></label>
+                    <label class="check" th:if="${brand.hasLogo()}"><input type="checkbox" name="removeLogo" value="true"> 현재 로고 삭제 (사이트명 텍스트로 대체)</label>
+                    <small class="muted">높이 약 30px로 표시됩니다. 투명 배경 PNG를 권장합니다. 풀 이미지형 히어로에서 '밝은 글자' 헤더를 쓰면 로고가 이미지 위에 놓이므로 흰색 로고가 잘 어울립니다. (SVG는 보안상 지원하지 않습니다)</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="card pad">
+            <h2 class="panel-title">색상</h2>
+            <div class="color-row">
+                <div class="color-field">
+                    <span class="field-name">포인트색</span>
+                    <div class="color-input">
+                        <input type="color" data-color-picker="primaryColor" th:value="*{primaryColor}" aria-label="포인트색 선택">
+                        <input type="text" name="primaryColor" th:value="*{primaryColor}" maxlength="7" pattern="#[0-9A-Fa-f]{6}" data-color-text="primaryColor" aria-label="포인트색 코드">
+                    </div>
+                    <small class="muted">버튼, 선택 표시, 스위치 등에 쓰입니다. 그 위의 글자색(흰색/어두운 색)은 자동으로 정해집니다.</small>
+                </div>
+                <div class="color-field">
+                    <span class="field-name">배경색</span>
+                    <div class="color-input">
+                        <input type="color" data-color-picker="backgroundColor" th:value="*{backgroundColor}" aria-label="배경색 선택">
+                        <input type="text" name="backgroundColor" th:value="*{backgroundColor}" maxlength="7" pattern="#[0-9A-Fa-f]{6}" data-color-text="backgroundColor" aria-label="배경색 코드">
+                    </div>
+                    <small class="muted">본문 글자가 읽히도록 밝은 색만 허용합니다.</small>
+                </div>
+                <div class="color-preview">
+                    <span class="field-name">미리보기</span>
+                    <div class="preview-box">
+                        <button type="button" class="btn primary" tabindex="-1">버튼 예시</button>
+                        <span class="chip on">선택됨</span>
+                        <span class="chip">기본</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card pad">
+            <h2 class="panel-title">폰트</h2>
+            <p class="muted small">사이트 전체(스토어와 관리자)의 글꼴입니다. 웹폰트 로드에 실패해도 시스템 기본 폰트로 표시됩니다.</p>
+            <div class="font-grid">
+                <label class="font-card" th:each="f : ${fonts}">
+                    <input type="radio" name="fontPreset" th:value="${f.name()}" th:checked="${form.fontPreset == f.name()}"
+                           th:attr="data-stack=${f.familyStack}">
+                    <span class="card-body" th:style="|font-family: ${f.familyStack}|">
+                        <span class="font-name" th:text="${f.label}">Pretendard</span>
+                        <span class="font-sample">가나다 AaBb 123</span>
+                        <span class="font-sample-sm">오늘의 추천 상품을 만나보세요</span>
+                        <span class="check" aria-hidden="true">✓</span>
+                    </span>
+                </label>
+            </div>
+        </section>
+
+        <div class="form-actions sticky-actions">
+            <button type="submit" class="btn primary">저장</button>
+        </div>
+    </form>
+
+    <form class="reset-form" th:action="@{/admin/design/reset}" method="post"
+          onsubmit="return confirm('사이트명, 로고, 색상, 폰트를 application.yml 기본값으로 되돌릴까요?')">
+        <button type="submit" class="link-btn danger">기본값으로 되돌리기</button>
+        <small class="muted">관리자에서 바꾼 사이트명, 로고, 색상, 폰트를 지우고 application.yml의 기본값을 사용합니다. (메뉴, 레이아웃은 영향 없음)</small>
+    </form>
+</main>
+</div>
+<script th:src="@{/js/admin-design.js}"></script>
+</body>
+</html>

@@ -6,7 +6,8 @@
 :root {
     --brand: #4E90C4;
     --bg: #F7FBFE;
-    --font: 'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif;
+    --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', sans-serif;
+    --on-brand: #ffffff;
 
     --ink: #23252B;
     --muted: #7A8794;

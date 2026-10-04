@@ -6,6 +6,8 @@
 <aside th:replace="~{fragments/admin :: sidebar(${active})}"></aside>
 <main>
     <h1>배너 관리</h1>
+    <p class="muted">메인 상단에는 <strong>순서가 가장 앞인 노출 배너</strong>가 사용됩니다(가로 배너형 / 풀 이미지형). 슬라이드형은 노출 중인 모든 배너를 순서대로 보여줍니다.
+        풀 이미지형 권장 이미지: 가로 2400px 이상, 16:10 비율, 5MB 이하(jpg, png, webp).</p>
     <div th:replace="~{fragments/admin :: flash}"></div>
     <div class="card pad banner-form" th:each="b : ${banners}">
         <form th:action="@{/admin/banners}" method="post" enctype="multipart/form-data">

@@ -13,34 +13,40 @@
 </head>
 <body>
 
-<!-- 상단 네비게이션 -->
-<header th:fragment="header" class="site-header">
+<!-- 상단 헤더. heroOverlay=true 이면 메인 히어로 이미지 위에 투명하게 겹친다 (라벨은 messages.properties) -->
+<header th:fragment="header" class="site-header" th:with="o=${heroOverlay == true}"
+        th:classappend="${o} ? ('overlay tone-' + ${heroNavTone})" data-site-header>
     <div class="container header-inner">
+        <button type="button" class="menu-btn" data-menu-open aria-controls="navDrawer" aria-expanded="false"
+                th:text="#{header.overlay.menu}">MENU</button>
         <a class="logo" th:href="@{/}">
             <img th:if="${brand.hasLogo()}" th:src="@{${brand.logoPath}}" th:alt="${brand.name}">
             <span th:unless="${brand.hasLogo()}" th:text="${brand.name}">LUMO</span>
         </a>
-        <nav class="main-nav">
-            <a th:href="@{/products}">전체상품</a>
-            <a th:href="@{/products(sort='new')}">신상품</a>
-            <a th:href="@{/products(sort='best')}">베스트</a>
-            <a th:href="@{/#event}">이벤트</a>
-        </nav>
+        <nav th:replace="~{fragments/nav :: inlineNav}"></nav>
         <div class="header-actions">
+            <button type="button" class="link-btn search-toggle" data-search-toggle aria-label="검색"
+                    th:text="#{header.overlay.search}">Search</button>
             <form th:action="@{/products}" method="get" class="search">
                 <input type="search" name="q" placeholder="검색" aria-label="상품 검색">
             </form>
             <th:block sec:authorize="!isAuthenticated()">
-                <a class="link" th:href="@{/login}">로그인</a>
-                <a class="link" th:href="@{/register}">회원가입</a>
+                <a class="link" th:href="@{/login}" th:text="${o} ? #{header.overlay.login} : #{header.login}">로그인</a>
+                <a class="link hide-overlay" th:href="@{/register}" th:text="#{header.register}">회원가입</a>
             </th:block>
             <th:block sec:authorize="isAuthenticated()">
-                <a class="link" th:href="@{/orders}">주문내역</a>
-                <form th:action="@{/logout}" method="post" class="inline"><button class="link-btn" type="submit">로그아웃</button></form>
+                <a class="link hide-overlay" th:href="@{/orders}" th:text="#{header.orders}">주문내역</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button class="link-btn" type="submit" th:text="${o} ? #{header.overlay.logout} : #{header.logout}">로그아웃</button>
+                </form>
             </th:block>
-            <a class="cart-pill" th:href="@{/cart}">장바구니<span th:if="${cartCount > 0}" class="count" th:text="${cartCount}">0</span></a>
+            <a class="cart-pill" th:href="@{/cart}">
+                <span th:text="${o} ? (#{header.overlay.bag} + ' ' + ${cartCount}) : #{header.bag}">장바구니</span>
+                <span th:if="${!o and cartCount > 0}" class="count" th:text="${cartCount}">0</span>
+            </a>
         </div>
     </div>
+    <div th:replace="~{fragments/nav :: drawer}"></div>
 </header>
 
 <!-- 푸터 -->
@@ -53,6 +59,7 @@
             <span th:if="${!#strings.isEmpty(brand.contactEmail)}"> · <span th:text="${brand.contactEmail}"></span></span>
         </p>
     </div>
+    <script th:src="@{/js/shop.js}"></script>
 </footer>
 
 <!-- 알림 메시지 -->

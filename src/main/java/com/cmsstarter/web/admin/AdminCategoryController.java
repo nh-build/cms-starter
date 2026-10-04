@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cmsstarter.domain.catalog.Category;
 import com.cmsstarter.domain.catalog.CategoryRepository;
 import com.cmsstarter.domain.catalog.ProductRepository;
+import com.cmsstarter.domain.content.MenuItemRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ public class AdminCategoryController {
 
     private final CategoryRepository categories;
     private final ProductRepository products;
+    private final MenuItemRepository menuItems;
 
     @GetMapping
     public String list(Model model) {
@@ -68,8 +70,11 @@ public class AdminCategoryController {
         if (products.countByCategoryId(id) > 0) {
             ra.addFlashAttribute("error", "상품이 연결된 카테고리는 삭제할 수 없습니다. 먼저 상품의 카테고리를 변경하세요.");
         } else {
+            long linkedMenus = menuItems.countByCategoryId(id);
             categories.deleteById(id);
-            ra.addFlashAttribute("message", "삭제했습니다.");
+            ra.addFlashAttribute("message", linkedMenus > 0
+                    ? "삭제했습니다. 이 카테고리에 연결된 메뉴 " + linkedMenus + "개도 함께 삭제되었습니다."
+                    : "삭제했습니다.");
         }
         return "redirect:/admin/categories";
     }

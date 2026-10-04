@@ -21,8 +21,11 @@
         <a th:href="@{/admin/orders}" th:classappend="${active == 'orders'} ? 'on'">주문 관리</a>
         <a th:href="@{/admin/categories}" th:classappend="${active == 'categories'} ? 'on'">카테고리</a>
         <a th:href="@{/admin/banners}" th:classappend="${active == 'banners'} ? 'on'">배너 관리</a>
-        <a th:href="@{/admin/sections}" th:classappend="${active == 'sections'} ? 'on'">메인 레이아웃</a>
         <a th:href="@{/admin/members}" th:classappend="${active == 'members'} ? 'on'">회원 관리</a>
+        <span class="nav-group">디자인</span>
+        <a th:href="@{/admin/menus}" th:classappend="${active == 'menus'} ? 'on'">메뉴 관리</a>
+        <a th:href="@{/admin/sections}" th:classappend="${active == 'sections'} ? 'on'">메인 레이아웃</a>
+        <a th:href="@{/admin/design}" th:classappend="${active == 'design'} ? 'on'">디자인 설정</a>
     </nav>
     <div class="side-foot">
         <a th:href="@{/}" target="_blank">스토어 보기 ↗</a>
